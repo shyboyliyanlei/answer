@@ -143,7 +143,6 @@
 
 /* ── Hero ─────────────────────────────────────────── */
 .hero {
-  border-bottom: 1px solid var(--border);
   background: var(--surface);
   overflow: hidden;
   position: relative;
@@ -233,6 +232,7 @@
   align-items: center;
   gap: 0;
   animation: fadeUp 0.5s 0.08s ease both;
+  border-bottom: 1px solid var(--border);
 }
 
 .heroStat {
