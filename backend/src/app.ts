@@ -8,6 +8,7 @@ import votesRouter from './routes/votes';
 import usersRouter from './routes/users';
 import tagsRouter from './routes/tags';
 import searchRouter from './routes/search';
+import notificationsRouter from './routes/notifications';
 
 dotenv.config();
 
@@ -27,5 +28,6 @@ app.use('/api/votes', votesRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/tags', tagsRouter);
 app.use('/api/search', searchRouter);
+app.use('/api/notifications', notificationsRouter);
 
 export default app;

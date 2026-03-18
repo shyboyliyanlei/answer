@@ -48,6 +48,21 @@ router.post('/', async (req: Request, res: Response) => {
     // 回答问题 +10 积分
     await addPoints(conn, author_id, POINTS.POST_ANSWER);
 
+    // 通知提问者（不通知自己）
+    const [qRows]: any = await conn.query(
+      'SELECT author_id, title FROM questions WHERE id = ?',
+      [question_id]
+    );
+    if (qRows.length && qRows[0].author_id !== author_id) {
+      const title = qRows[0].title.length > 28 ? qRows[0].title.slice(0, 28) + '…' : qRows[0].title;
+      const [uRows]: any = await conn.query('SELECT username FROM users WHERE id = ?', [author_id]);
+      const answererName = uRows.length ? uRows[0].username : '有人';
+      await conn.query(
+        'INSERT INTO notifications (user_id, type, message, related_question_id) VALUES (?, ?, ?, ?)',
+        [qRows[0].author_id, 'answer', `${answererName} 回答了你的问题「${title}」`, question_id]
+      );
+    }
+
     await conn.commit();
     res.status(201).json({ id: result.insertId });
   } catch (err) {
@@ -74,7 +89,7 @@ router.patch('/:id/accept', async (req: Request, res: Response) => {
 
     // 查询答案及所属问题
     const [rows]: any = await conn.query(
-      `SELECT a.id, a.author_id, a.is_accepted, q.author_id AS question_author_id, q.id AS question_id, q.is_solved
+      `SELECT a.id, a.author_id, a.is_accepted, q.author_id AS question_author_id, q.id AS question_id, q.is_solved, q.title
        FROM answers a JOIN questions q ON a.question_id = q.id
        WHERE a.id = ?`,
       [answerId]
@@ -119,6 +134,15 @@ router.patch('/:id/accept', async (req: Request, res: Response) => {
 
     // 回答被采纳 +30 积分
     await addPoints(conn, answer.author_id, POINTS.ANSWER_ACCEPTED);
+
+    // 通知答者（不通知自己）
+    if (answer.author_id !== operator_id) {
+      const title = answer.title.length > 28 ? answer.title.slice(0, 28) + '…' : answer.title;
+      await conn.query(
+        'INSERT INTO notifications (user_id, type, message, related_question_id) VALUES (?, ?, ?, ?)',
+        [answer.author_id, 'answer_accept', `你对「${title}」的回答被采纳了`, answer.question_id]
+      );
+    }
 
     await conn.commit();
     res.json({ success: true });

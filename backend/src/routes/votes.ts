@@ -38,9 +38,11 @@ router.post('/', async (req: Request, res: Response) => {
 
     // 查询目标是否存在，并获取作者
     let targetAuthorId: number;
+    let notifyQuestionId: number;
+    let notifyTitle: string;
     if (target_type === 'question') {
       const [rows]: any = await conn.query(
-        'SELECT author_id FROM questions WHERE id = ?',
+        'SELECT author_id, title FROM questions WHERE id = ?',
         [target_id]
       );
       if (!rows.length) {
@@ -49,9 +51,13 @@ router.post('/', async (req: Request, res: Response) => {
         return;
       }
       targetAuthorId = rows[0].author_id;
+      notifyQuestionId = Number(target_id);
+      notifyTitle = rows[0].title;
     } else {
       const [rows]: any = await conn.query(
-        'SELECT author_id FROM answers WHERE id = ?',
+        `SELECT a.author_id, q.title, q.id AS question_id
+         FROM answers a JOIN questions q ON a.question_id = q.id
+         WHERE a.id = ?`,
         [target_id]
       );
       if (!rows.length) {
@@ -60,6 +66,8 @@ router.post('/', async (req: Request, res: Response) => {
         return;
       }
       targetAuthorId = rows[0].author_id;
+      notifyQuestionId = rows[0].question_id;
+      notifyTitle = rows[0].title;
     }
 
     // 防止重复点赞
@@ -84,6 +92,19 @@ router.post('/', async (req: Request, res: Response) => {
     } else {
       await conn.query('UPDATE answers SET votes = votes + 1 WHERE id = ?', [target_id]);
       await addPoints(conn, targetAuthorId, POINTS.ANSWER_VOTED);
+    }
+
+    // 通知被点赞者（不通知自己）
+    if (Number(user_id) !== targetAuthorId) {
+      const shortTitle = notifyTitle.length > 28 ? notifyTitle.slice(0, 28) + '…' : notifyTitle;
+      const notifyType = target_type === 'question' ? 'question_vote' : 'answer_vote';
+      const msg = target_type === 'question'
+        ? `你的问题「${shortTitle}」获得了一个赞`
+        : `你对「${shortTitle}」的回答获得了一个赞`;
+      await conn.query(
+        'INSERT INTO notifications (user_id, type, message, related_question_id) VALUES (?, ?, ?, ?)',
+        [targetAuthorId, notifyType, msg, notifyQuestionId]
+      );
     }
 
     await conn.commit();

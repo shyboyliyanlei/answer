@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import NotificationBell from './NotificationBell'
 import styles from './Topbar.module.css'
 
 export default function Topbar() {
@@ -84,6 +85,8 @@ export default function Topbar() {
             </button>
           )}
         </div>
+
+        <NotificationBell />
 
         <nav className={styles.nav}>
           {user ? (
