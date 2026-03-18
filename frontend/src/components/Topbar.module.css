@@ -1,0 +1,242 @@
+.topbar {
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: rgba(255, 255, 255, 0.93);
+  backdrop-filter: blur(10px);
+  z-index: 20;
+}
+
+.topbarInner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 48px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* ── Brand ── */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.brandChar {
+  font-family: 'DM Serif Display', serif;
+  font-size: 30px;
+  color: var(--accent);
+  line-height: 1;
+  letter-spacing: -1.5px;
+}
+
+.brandText {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.brandName {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: 0.01em;
+  line-height: 1;
+}
+
+.brandSub {
+  font-size: 11px;
+  color: var(--ink-muted);
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+/* ── Middle search area ── */
+.searchArea {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+/* ── Search bar (expanded) ── */
+.searchBar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: calc(100% * 5 / 6);
+  border-bottom: 1.5px solid var(--ink);
+  padding-bottom: 2px;
+  animation: searchExpand 0.28s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes searchExpand {
+  from { opacity: 0; transform: scaleX(0.85); transform-origin: right; }
+  to   { opacity: 1; transform: scaleX(1);    transform-origin: right; }
+}
+
+.searchBarIcon {
+  color: var(--ink-muted);
+  flex-shrink: 0;
+}
+
+.searchBarInput {
+  flex: 1;
+  min-width: 0;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13.5px;
+  font-weight: 400;
+  color: var(--ink);
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 6px 0;
+  caret-color: var(--accent);
+}
+
+.searchBarInput::placeholder {
+  color: var(--ink-muted);
+}
+
+.searchBarBtn {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #fff;
+  background: var(--accent);
+  border: none;
+  border-radius: 2px;
+  padding: 7px 14px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+
+.searchBarBtn:hover { background: var(--accent-hover); }
+
+.searchBarClose {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  color: var(--ink-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-radius: 2px;
+  flex-shrink: 0;
+  transition: color 0.15s, background 0.15s;
+}
+
+.searchBarClose:hover {
+  color: var(--ink);
+  background: var(--surface-2);
+}
+
+/* ── Search icon button (collapsed) ── */
+.searchNavBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  color: var(--ink-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: color 0.15s, background 0.15s;
+}
+
+.searchNavBtn:hover {
+  color: var(--ink);
+  background: var(--surface-2);
+}
+
+/* ── Nav (always visible) ── */
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.navUser {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-secondary);
+  text-decoration: none;
+  padding: 4px 10px;
+  transition: color 0.15s;
+}
+
+.navUser:hover { color: var(--ink); }
+
+.navLink {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--ink-secondary);
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 2px;
+  transition: color 0.15s;
+}
+
+.navLink:hover { color: var(--ink); }
+
+.registerBtn {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--ink);
+  background: transparent;
+  border: 1.5px solid var(--ink);
+  border-radius: 2px;
+  padding: 6px 14px;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+
+.registerBtn:hover { background: var(--ink); color: #fff; }
+
+.askBtn {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #fff;
+  background: var(--accent);
+  border-radius: 2px;
+  padding: 7px 14px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.15s;
+}
+
+.askBtn:hover { background: var(--accent-hover); }
+
+.logoutBtn {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 2px;
+  transition: color 0.15s, background 0.15s;
+}
+
+.logoutBtn:hover { color: var(--ink); background: var(--surface-2); }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .topbarInner { padding-left: 20px; padding-right: 20px; }
+  .brandSub { display: none; }
+}

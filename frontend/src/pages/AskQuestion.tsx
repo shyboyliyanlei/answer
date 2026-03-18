@@ -1,6 +1,7 @@
 import { useState, KeyboardEvent, FormEvent } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import Topbar from '../components/Topbar'
 import styles from './AskQuestion.module.css'
 
 export default function AskQuestion() {
@@ -60,16 +61,7 @@ export default function AskQuestion() {
 
   return (
     <div className={styles.page}>
-      {/* Top bar */}
-      <header className={styles.topbar}>
-        <Link to="/" className={styles.logoLink}>
-          <span className={styles.logoChar}>答</span>
-          <span className={styles.logoText}>问答社区</span>
-        </Link>
-        <div className={styles.topbarRight}>
-          <span className={styles.userBadge}>{user?.username}</span>
-        </div>
-      </header>
+      <Topbar />
 
       <div className={styles.body}>
         {/* Main form */}

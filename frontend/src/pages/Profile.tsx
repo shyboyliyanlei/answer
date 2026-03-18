@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
-import { Link, useParams, useNavigate } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import Topbar from '../components/Topbar'
 import styles from './Profile.module.css'
 
 interface UserInfo {
@@ -51,8 +52,7 @@ function parseTags(tags: any): string[] {
 
 export default function Profile() {
   const { id } = useParams<{ id: string }>()
-  const { user, logout } = useAuth()
-  const navigate = useNavigate()
+  const { user } = useAuth()
 
   const [tab, setTab] = useState<'questions' | 'answers'>('questions')
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null)
@@ -88,48 +88,13 @@ export default function Profile() {
       .finally(() => setLoadingContent(false))
   }, [id, tab])
 
-  function handleLogout() {
-    logout()
-    navigate('/')
-  }
-
   const joinYear = userInfo
     ? new Date(userInfo.created_at).getFullYear()
     : null
 
   return (
     <div className={styles.page}>
-      {/* ── Top bar ── */}
-      <header className={styles.topbar}>
-        <div className={styles.topbarInner}>
-          <Link to="/" className={styles.brand}>
-            <span className={styles.brandChar}>答</span>
-            <div className={styles.brandText}>
-              <span className={styles.brandName}>问答社区</span>
-              <span className={styles.brandSub}>知识共建平台</span>
-            </div>
-          </Link>
-          <nav className={styles.nav}>
-            {user ? (
-              <>
-                <Link to={`/users/${user.id}`} className={styles.navUser}>{user.username}</Link>
-                <Link to="/ask" className={styles.askBtn}>
-                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-                    <path d="M6.5 1v11M1 6.5h11" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
-                  </svg>
-                  提问
-                </Link>
-                <button className={styles.logoutBtn} onClick={handleLogout}>退出</button>
-              </>
-            ) : (
-              <>
-                <Link to="/login" className={styles.navLink}>登录</Link>
-                <Link to="/register" className={styles.registerBtn}>注册</Link>
-              </>
-            )}
-          </nav>
-        </div>
-      </header>
+      <Topbar />
 
       <div className={styles.layout}>
         {/* ── Sidebar ── */}

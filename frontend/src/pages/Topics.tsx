@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
-import { Link, useSearchParams, useNavigate } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import Topbar from '../components/Topbar'
 import styles from './Topics.module.css'
 
 interface TagInfo {
@@ -38,8 +39,7 @@ function parseTags(tags: any): string[] {
 }
 
 export default function Topics() {
-  const { user, logout } = useAuth()
-  const navigate = useNavigate()
+  const { user } = useAuth()
   const [searchParams, setSearchParams] = useSearchParams()
   const activeTag = searchParams.get('tag') || ''
 
@@ -76,44 +76,9 @@ export default function Topics() {
     }
   }
 
-  function handleLogout() {
-    logout()
-    navigate('/')
-  }
-
   return (
     <div className={styles.page}>
-      {/* ── Top bar ── */}
-      <header className={styles.topbar}>
-        <div className={styles.topbarInner}>
-          <Link to="/" className={styles.brand}>
-            <span className={styles.brandChar}>答</span>
-            <div className={styles.brandText}>
-              <span className={styles.brandName}>问答社区</span>
-              <span className={styles.brandSub}>知识共建平台</span>
-            </div>
-          </Link>
-          <nav className={styles.nav}>
-            {user ? (
-              <>
-                <Link to={`/users/${user.id}`} className={styles.navUser}>{user.username}</Link>
-                <Link to="/ask" className={styles.askBtn}>
-                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-                    <path d="M6.5 1v11M1 6.5h11" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
-                  </svg>
-                  提问
-                </Link>
-                <button className={styles.logoutBtn} onClick={handleLogout}>退出</button>
-              </>
-            ) : (
-              <>
-                <Link to="/login" className={styles.navLink}>登录</Link>
-                <Link to="/register" className={styles.registerBtn}>注册</Link>
-              </>
-            )}
-          </nav>
-        </div>
-      </header>
+      <Topbar />
 
       {/* ── Page header ── */}
       <div className={styles.pageHeader}>

@@ -1,6 +1,7 @@
 import { useState, useEffect, FormEvent } from 'react'
-import { useParams, Link, useNavigate } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import Topbar from '../components/Topbar'
 import styles from './QuestionDetail.module.css'
 
 interface Question {
@@ -99,7 +100,6 @@ function formatDate(iso: string) {
 export default function QuestionDetail() {
   const { id } = useParams<{ id: string }>()
   const { user } = useAuth()
-  const navigate = useNavigate()
 
   const [question, setQuestion] = useState<Question | null>(null)
   const [answers, setAnswers] = useState<Answer[]>([])
@@ -206,23 +206,7 @@ export default function QuestionDetail() {
 
   return (
     <div className={styles.page}>
-      {/* Top bar */}
-      <header className={styles.topbar}>
-        <Link to="/" className={styles.logoLink}>
-          <span className={styles.logoChar}>答</span>
-          <span className={styles.logoText}>问答社区</span>
-        </Link>
-        <div className={styles.topbarRight}>
-          {user ? (
-            <>
-              <span className={styles.userBadge}>{user.username}</span>
-              <Link to="/ask" className={styles.askBtn}>提问</Link>
-            </>
-          ) : (
-            <Link to="/login" className={styles.askBtn}>登录</Link>
-          )}
-        </div>
-      </header>
+      <Topbar />
 
       <div className={styles.layout}>
         <main className={styles.main}>
