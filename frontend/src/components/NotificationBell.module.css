@@ -72,7 +72,7 @@
   position: absolute;
   top: calc(100% + 10px);
   left: 0;
-  width: 320px;
+  width: 300px;
   background: #fff;
   border: 1px solid var(--border);
   border-top: 2px solid var(--accent);
