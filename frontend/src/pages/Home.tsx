@@ -8,6 +8,7 @@ interface Question {
   id: number
   title: string
   tags: string[]
+  author_id: number
   author_name: string
   views: number
   answers_count: number
@@ -155,7 +156,7 @@ export default function Home() {
                         </Link>
                       </div>
                       <div className={styles.itemMeta}>
-                        <span className={styles.itemAuthor}>{q.author_name}</span>
+                        <Link to={`/users/${q.author_id}`} className={styles.itemAuthor}>{q.author_name}</Link>
                         <span className={styles.metaDot}>·</span>
                         <span className={styles.itemTime}>{formatRelative(q.created_at)}</span>
                         {tags.length > 0 && (

@@ -223,7 +223,10 @@
   font-size: 13.5px;
   font-weight: 500;
   color: var(--ink);
+  text-decoration: none;
+  transition: color 0.15s;
 }
+.authorName:hover { color: var(--accent); }
 
 .dot { color: var(--ink-muted); font-size: 12px; }
 

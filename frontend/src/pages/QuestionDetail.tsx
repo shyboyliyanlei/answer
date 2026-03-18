@@ -350,7 +350,7 @@ export default function QuestionDetail() {
                   </div>
                   <h1 className={styles.questionTitle}>{question.title}</h1>
                   <div className={styles.authorLine}>
-                    <span className={styles.authorName}>{question.author_name}</span>
+                    <Link to={`/users/${question.author_id}`} className={styles.authorName}>{question.author_name}</Link>
                     <span className={styles.dot}>·</span>
                     <span className={styles.date}>{formatDate(question.created_at)}</span>
                     <span className={styles.dot}>·</span>
@@ -424,7 +424,7 @@ export default function QuestionDetail() {
                             ))}
                           </div>
                           <div className={styles.answerFooter}>
-                            <span className={styles.authorName}>{answer.author_name}</span>
+                            <Link to={`/users/${answer.author_id}`} className={styles.authorName}>{answer.author_name}</Link>
                             <span className={styles.dot}>·</span>
                             <span className={styles.date}>{formatDate(answer.created_at)}</span>
                             {user?.id === answer.author_id && (

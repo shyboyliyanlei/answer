@@ -13,6 +13,7 @@ interface Question {
   id: number
   title: string
   tags: any
+  author_id: number
   author_name: string
   views: number
   answers_count: number
@@ -167,7 +168,7 @@ export default function Topics() {
                         </Link>
                       </div>
                       <div className={styles.itemMeta}>
-                        <span className={styles.metaAuthor}>{q.author_name}</span>
+                        <Link to={`/users/${q.author_id}`} className={styles.metaAuthor}>{q.author_name}</Link>
                         <span className={styles.metaDot}>·</span>
                         <span className={styles.metaTime}>{formatRelative(q.created_at)}</span>
                         {qTags.length > 0 && (
