@@ -76,6 +76,12 @@ export default function Home() {
           </div>
 
           <nav className={styles.nav}>
+            <Link to="/search" className={styles.searchNavBtn} aria-label="搜索">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" strokeWidth="1.5"/>
+                <path d="M10 10l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+            </Link>
             {user ? (
               <>
                 <Link to={`/users/${user.id}`} className={styles.navUser}>{user.username}</Link>

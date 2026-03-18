@@ -67,6 +67,22 @@
   gap: 8px;
 }
 
+.searchNavBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  color: var(--ink-muted);
+  border-radius: 2px;
+  transition: color 0.15s, background 0.15s;
+}
+
+.searchNavBtn:hover {
+  color: var(--ink);
+  background: var(--surface-2);
+}
+
 .navUser {
   font-size: 13px;
   font-weight: 500;
