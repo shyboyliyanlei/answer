@@ -8,13 +8,19 @@ export default function Register() {
   const navigate = useNavigate()
 
   const [form, setForm] = useState({ username: '', email: '', password: '' })
+  const [confirm, setConfirm] = useState('')
   const [showPwd, setShowPwd] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     setError('')
+    if (form.password !== confirm) {
+      setError('两次输入的密码不一致')
+      return
+    }
     setLoading(true)
     try {
       const res = await fetch('/api/auth/register', {
@@ -124,6 +130,44 @@ export default function Register() {
                   )}
                 </button>
               </div>
+            </div>
+
+            <div className={styles.field}>
+              <label className={styles.fieldLabel} htmlFor="confirm">确认密码</label>
+              <div className={styles.pwdWrap}>
+                <input
+                  id="confirm"
+                  type={showConfirm ? 'text' : 'password'}
+                  className={`${styles.input} ${confirm && form.password !== confirm ? styles.inputError : ''}`}
+                  placeholder="再次输入密码"
+                  value={confirm}
+                  onChange={e => setConfirm(e.target.value)}
+                  required
+                  autoComplete="new-password"
+                />
+                <button
+                  type="button"
+                  className={styles.eyeBtn}
+                  onClick={() => setShowConfirm(v => !v)}
+                  aria-label={showConfirm ? '隐藏密码' : '显示密码'}
+                >
+                  {showConfirm ? (
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/>
+                      <circle cx="8" cy="8" r="2" stroke="currentColor" strokeWidth="1.4"/>
+                      <path d="M2 2l12 12" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+                    </svg>
+                  ) : (
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/>
+                      <circle cx="8" cy="8" r="2" stroke="currentColor" strokeWidth="1.4"/>
+                    </svg>
+                  )}
+                </button>
+              </div>
+              {confirm && form.password !== confirm && (
+                <span className={styles.fieldHint}>密码不一致</span>
+              )}
             </div>
 
             <button type="submit" className={styles.submit} disabled={loading}>
