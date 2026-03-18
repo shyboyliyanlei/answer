@@ -72,21 +72,14 @@ export default function Profile() {
 
   useEffect(() => {
     setLoadingContent(true)
-    const url = tab === 'questions'
-      ? `/api/users/${id}/questions`
-      : `/api/users/${id}/answers`
-    fetch(url)
-      .then(r => r.json())
-      .then(data => {
-        if (tab === 'questions') setQuestions(Array.isArray(data) ? data : [])
-        else setAnswers(Array.isArray(data) ? data : [])
-      })
-      .catch(() => {
-        if (tab === 'questions') setQuestions([])
-        else setAnswers([])
-      })
-      .finally(() => setLoadingContent(false))
-  }, [id, tab])
+    Promise.all([
+      fetch(`/api/users/${id}/questions`).then(r => r.json()).catch(() => []),
+      fetch(`/api/users/${id}/answers`).then(r => r.json()).catch(() => []),
+    ]).then(([qs, as]) => {
+      setQuestions(Array.isArray(qs) ? qs : [])
+      setAnswers(Array.isArray(as) ? as : [])
+    }).finally(() => setLoadingContent(false))
+  }, [id])
 
   const joinYear = userInfo
     ? new Date(userInfo.created_at).getFullYear()
