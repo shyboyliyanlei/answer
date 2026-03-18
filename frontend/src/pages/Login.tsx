@@ -1,8 +1,14 @@
 import { useState, FormEvent } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 import styles from './Auth.module.css'
 
 export default function Login() {
+  const { login } = useAuth()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const from = (location.state as any)?.from?.pathname || '/'
+
   const [form, setForm] = useState({ email: '', password: '' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -19,7 +25,8 @@ export default function Login() {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || '登录失败')
-      // TODO: 存储 token，跳转首页
+      login(data)
+      navigate(from, { replace: true })
     } catch (err: any) {
       setError(err.message)
     } finally {

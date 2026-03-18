@@ -1,8 +1,12 @@
 import { useState, FormEvent } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 import styles from './Auth.module.css'
 
 export default function Register() {
+  const { login } = useAuth()
+  const navigate = useNavigate()
+
   const [form, setForm] = useState({ username: '', email: '', password: '' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -19,7 +23,8 @@ export default function Register() {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || '注册失败')
-      // TODO: 跳转登录页
+      login(data)
+      navigate('/', { replace: true })
     } catch (err: any) {
       setError(err.message)
     } finally {
