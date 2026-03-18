@@ -378,7 +378,7 @@
   margin: 0 auto;
   padding: 0 48px 64px;
   display: grid;
-  grid-template-columns: 1fr 230px;
+  grid-template-columns: 1fr 250px;
   gap: 40px;
   align-items: start;
 }
