@@ -4,6 +4,25 @@ import { POINTS, addPoints } from '../points';
 
 const router = Router();
 
+// 获取某问题下的所有答案
+router.get('/', async (req: Request, res: Response) => {
+  const { question_id } = req.query;
+  if (!question_id) {
+    res.status(400).json({ error: 'question_id is required' });
+    return;
+  }
+  const [rows]: any = await pool.query(
+    `SELECT a.id, a.content, a.author_id, u.username AS author_name,
+            a.votes, a.is_accepted, a.created_at
+     FROM answers a
+     JOIN users u ON a.author_id = u.id
+     WHERE a.question_id = ?
+     ORDER BY a.is_accepted DESC, a.votes DESC, a.created_at ASC`,
+    [question_id]
+  );
+  res.json(rows);
+});
+
 // 回答问题
 router.post('/', async (req: Request, res: Response) => {
   const { content, question_id, author_id } = req.body;

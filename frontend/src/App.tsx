@@ -4,6 +4,7 @@ import RequireAuth from './components/RequireAuth'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import AskQuestion from './pages/AskQuestion'
+import QuestionDetail from './pages/QuestionDetail'
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
               </RequireAuth>
             }
           />
+          <Route path="/questions/:id" element={<QuestionDetail />} />
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </BrowserRouter>

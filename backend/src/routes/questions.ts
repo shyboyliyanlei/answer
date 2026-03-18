@@ -43,6 +43,25 @@ router.get('/', async (req: Request, res: Response) => {
   res.json(rows);
 });
 
+// 问题详情
+router.get('/:id', async (req: Request, res: Response) => {
+  const id = Number(req.params.id);
+  const [rows]: any = await pool.query(
+    `SELECT q.id, q.title, q.content, q.tags, q.author_id, u.username AS author_name,
+            q.views, q.answers_count, q.votes, q.is_solved, q.created_at
+     FROM questions q
+     JOIN users u ON q.author_id = u.id
+     WHERE q.id = ?`,
+    [id]
+  );
+  if (!rows.length) {
+    res.status(404).json({ error: 'Question not found' });
+    return;
+  }
+  await pool.query('UPDATE questions SET views = views + 1 WHERE id = ?', [id]);
+  res.json(rows[0]);
+});
+
 // 发布问题
 router.post('/', async (req: Request, res: Response) => {
   const { title, content, tags, author_id } = req.body;
