@@ -60,7 +60,7 @@
   flex: 1;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: flex-end;
   min-width: 0;
 }
 
@@ -69,7 +69,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  width: calc(100% * 5 / 6);
+  width: calc(100% * 5 / 6 + 20px);
   border-bottom: 1.5px solid var(--ink);
   padding-bottom: 2px;
   animation: searchExpand 0.28s cubic-bezier(0.4, 0, 0.2, 1) both;

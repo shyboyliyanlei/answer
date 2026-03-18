@@ -53,8 +53,9 @@ export default function Topbar() {
           </div>
         </Link>
 
+        {/* 展开时显示搜索框，折叠时占位为零 */}
         <div className={styles.searchArea}>
-          {searchOpen ? (
+          {searchOpen && (
             <form className={styles.searchBar} onSubmit={handleSearchSubmit}>
               <svg className={styles.searchBarIcon} width="15" height="15" viewBox="0 0 15 15" fill="none">
                 <circle cx="6" cy="6" r="4.5" stroke="currentColor" strokeWidth="1.4"/>
@@ -76,19 +77,17 @@ export default function Topbar() {
                 </svg>
               </button>
             </form>
-          ) : (
-            <button className={styles.searchNavBtn} onClick={openSearch} aria-label="搜索">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" strokeWidth="1.5"/>
-                <path d="M10 10l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-              </svg>
-            </button>
           )}
         </div>
 
-        <NotificationBell />
-
         <nav className={styles.nav}>
+          {/* 搜索图标：个人中心左侧 */}
+          <button className={styles.searchNavBtn} onClick={openSearch} aria-label="搜索">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" strokeWidth="1.5"/>
+              <path d="M10 10l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+            </svg>
+          </button>
           {user ? (
             <>
               <Link to={`/users/${user.id}`} className={styles.navUser}>{user.username}</Link>
@@ -99,6 +98,8 @@ export default function Topbar() {
                 提问
               </Link>
               <button className={styles.logoutBtn} onClick={handleLogout}>退出</button>
+              {/* 铃铛：退出右侧 */}
+              <NotificationBell />
             </>
           ) : (
             <>
