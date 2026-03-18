@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import styles from './Home.module.css'
@@ -35,6 +35,9 @@ export default function Home() {
   const [questions, setQuestions] = useState<Question[]>([])
   const [loading, setLoading] = useState(true)
   const [topTags, setTopTags] = useState<{ tag: string; count: number }[]>([])
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [searchVal, setSearchVal] = useState('')
+  const searchInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     setLoading(true)
@@ -57,6 +60,32 @@ export default function Home() {
     navigate('/')
   }
 
+  function openSearch() {
+    setSearchOpen(true)
+    setTimeout(() => searchInputRef.current?.focus(), 50)
+  }
+
+  function closeSearch() {
+    setSearchOpen(false)
+    setSearchVal('')
+  }
+
+  function handleSearchSubmit(e: FormEvent) {
+    e.preventDefault()
+    const q = searchVal.trim()
+    if (!q) return
+    closeSearch()
+    navigate(`/search?q=${encodeURIComponent(q)}`)
+  }
+
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape' && searchOpen) closeSearch()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [searchOpen])
+
   const parseTags = (tags: any): string[] => {
     if (Array.isArray(tags)) return tags
     try { return JSON.parse(tags) } catch { return [] }
@@ -75,31 +104,61 @@ export default function Home() {
             </div>
           </div>
 
-          <nav className={styles.nav}>
-            <Link to="/search" className={styles.searchNavBtn} aria-label="搜索">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" strokeWidth="1.5"/>
-                <path d="M10 10l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+          <div className={styles.navRight}>
+            {/* 展开的搜索栏 */}
+            <form
+              className={`${styles.searchBar} ${searchOpen ? styles.searchBarOpen : ''}`}
+              onSubmit={handleSearchSubmit}
+            >
+              <svg className={styles.searchBarIcon} width="15" height="15" viewBox="0 0 15 15" fill="none">
+                <circle cx="6" cy="6" r="4.5" stroke="currentColor" strokeWidth="1.4"/>
+                <path d="M9.5 9.5l4 4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
               </svg>
-            </Link>
-            {user ? (
-              <>
-                <Link to={`/users/${user.id}`} className={styles.navUser}>{user.username}</Link>
-                <Link to="/ask" className={styles.askBtn}>
-                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-                    <path d="M6.5 1v11M1 6.5h11" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
-                  </svg>
-                  提问
-                </Link>
-                <button className={styles.logoutBtn} onClick={handleLogout}>退出</button>
-              </>
-            ) : (
-              <>
-                <Link to="/login" className={styles.navLink}>登录</Link>
-                <Link to="/register" className={styles.registerBtn}>注册</Link>
-              </>
-            )}
-          </nav>
+              <input
+                ref={searchInputRef}
+                className={styles.searchBarInput}
+                type="text"
+                placeholder="搜索问题…"
+                value={searchVal}
+                onChange={e => setSearchVal(e.target.value)}
+                tabIndex={searchOpen ? 0 : -1}
+                autoComplete="off"
+              />
+              <button type="submit" className={styles.searchBarBtn}>搜索</button>
+              <button type="button" className={styles.searchBarClose} onClick={closeSearch} aria-label="关闭搜索">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                  <path d="M1 1l10 10M11 1L1 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                </svg>
+              </button>
+            </form>
+
+            {/* 常规导航项 */}
+            <nav className={`${styles.nav} ${searchOpen ? styles.navHidden : ''}`}>
+              <button className={styles.searchNavBtn} onClick={openSearch} aria-label="搜索">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" strokeWidth="1.5"/>
+                  <path d="M10 10l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                </svg>
+              </button>
+              {user ? (
+                <>
+                  <Link to={`/users/${user.id}`} className={styles.navUser}>{user.username}</Link>
+                  <Link to="/ask" className={styles.askBtn}>
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                      <path d="M6.5 1v11M1 6.5h11" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+                    </svg>
+                    提问
+                  </Link>
+                  <button className={styles.logoutBtn} onClick={handleLogout}>退出</button>
+                </>
+              ) : (
+                <>
+                  <Link to="/login" className={styles.navLink}>登录</Link>
+                  <Link to="/register" className={styles.registerBtn}>注册</Link>
+                </>
+              )}
+            </nav>
+          </div>
         </div>
       </header>
 
