@@ -268,6 +268,14 @@
   width: 100%;
   margin: 0 auto;
   padding: 0 48px 64px;
+  display: grid;
+  grid-template-columns: 1fr 200px;
+  gap: 40px;
+  align-items: start;
+}
+
+.listCol {
+  min-width: 0;
 }
 
 .listHeader {
@@ -557,6 +565,109 @@
 
 .emptyBtn:hover { background: var(--accent-hover); }
 
+/* ── Sidebar ──────────────────────────────────────── */
+.sidebar {
+  position: sticky;
+  top: 80px;
+  animation: fadeUp 0.5s 0.1s ease both;
+}
+
+.topicsCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: var(--ink);
+  border-radius: 2px;
+  padding: 22px 20px 18px;
+  text-decoration: none;
+  overflow: hidden;
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.topicsCard::before {
+  content: '';
+  position: absolute;
+  top: -30px;
+  right: -30px;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, rgba(217, 79, 43, 0.25) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.topicsCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(17, 17, 16, 0.18);
+}
+
+.topicsEyebrow {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  margin-bottom: 10px;
+  display: block;
+}
+
+.topicsTitle {
+  font-family: 'DM Serif Display', serif;
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: -0.8px;
+  line-height: 1.2;
+  color: #fff;
+  margin: 0 0 18px;
+}
+
+.topicsTagGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 18px;
+  min-height: 28px;
+}
+
+.topicsTag {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 2px;
+  padding: 2px 7px;
+  animation: chipIn 0.3s ease both;
+}
+
+@keyframes chipIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.topicsFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 14px;
+}
+
+.topicsCount {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.topicsArrow {
+  font-size: 16px;
+  color: var(--accent);
+  transition: transform 0.2s ease;
+}
+
+.topicsCard:hover .topicsArrow {
+  transform: translateX(4px);
+}
+
 /* ── Footer ───────────────────────────────────────── */
 .footer {
   border-top: 1px solid var(--border);
@@ -573,8 +684,16 @@
   .topbarInner,
   .heroInner,
   .heroStats,
-  .main,
   .footer { padding-left: 20px; padding-right: 20px; }
+
+  .main {
+    grid-template-columns: 1fr;
+    padding-left: 20px;
+    padding-right: 20px;
+    gap: 32px;
+  }
+
+  .sidebar { position: static; }
 
   .item::before { left: -20px; }
 

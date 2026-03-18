@@ -34,6 +34,7 @@ export default function Home() {
   const [sort, setSort] = useState<'recommend' | 'newest' | 'hot'>('recommend')
   const [questions, setQuestions] = useState<Question[]>([])
   const [loading, setLoading] = useState(true)
+  const [topTags, setTopTags] = useState<{ tag: string; count: number }[]>([])
 
   useEffect(() => {
     setLoading(true)
@@ -43,6 +44,13 @@ export default function Home() {
       .catch(() => setQuestions([]))
       .finally(() => setLoading(false))
   }, [sort])
+
+  useEffect(() => {
+    fetch('/api/tags')
+      .then(r => r.json())
+      .then(data => setTopTags(Array.isArray(data) ? data.slice(0, 10) : []))
+      .catch(() => setTopTags([]))
+  }, [])
 
   function handleLogout() {
     logout()
@@ -126,92 +134,118 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── Question list ── */}
+      {/* ── Question list + Sidebar ── */}
       <main className={styles.main}>
-        <div className={styles.listHeader}>
-          <div className={styles.sortTabs}>
-            <button
-              className={`${styles.sortBtn} ${sort === 'recommend' ? styles.sortBtnActive : ''}`}
-              onClick={() => setSort('recommend')}
-            >推荐</button>
-            <button
-              className={`${styles.sortBtn} ${sort === 'newest' ? styles.sortBtnActive : ''}`}
-              onClick={() => setSort('newest')}
-            >最新</button>
-            <button
-              className={`${styles.sortBtn} ${sort === 'hot' ? styles.sortBtnActive : ''}`}
-              onClick={() => setSort('hot')}
-            >热度</button>
+        {/* left: question list */}
+        <div className={styles.listCol}>
+          <div className={styles.listHeader}>
+            <div className={styles.sortTabs}>
+              <button
+                className={`${styles.sortBtn} ${sort === 'recommend' ? styles.sortBtnActive : ''}`}
+                onClick={() => setSort('recommend')}
+              >推荐</button>
+              <button
+                className={`${styles.sortBtn} ${sort === 'newest' ? styles.sortBtnActive : ''}`}
+                onClick={() => setSort('newest')}
+              >最新</button>
+              <button
+                className={`${styles.sortBtn} ${sort === 'hot' ? styles.sortBtnActive : ''}`}
+                onClick={() => setSort('hot')}
+              >热度</button>
+            </div>
+            {user && (
+              <Link to="/ask" className={styles.listAskBtn}>
+                发布问题
+              </Link>
+            )}
           </div>
-          {user && (
-            <Link to="/ask" className={styles.listAskBtn}>
-              发布问题
-            </Link>
+
+          {loading ? (
+            <div className={styles.loadingWrap}>
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className={styles.skeleton} style={{ animationDelay: `${i * 0.08}s` }} />
+              ))}
+            </div>
+          ) : questions.length === 0 ? (
+            <div className={styles.empty}>
+              <p className={styles.emptyTitle}>还没有问题</p>
+              <p className={styles.emptyHint}>成为第一个提问者</p>
+              {user
+                ? <Link to="/ask" className={styles.emptyBtn}>立即提问</Link>
+                : <Link to="/register" className={styles.emptyBtn}>注册后提问</Link>
+              }
+            </div>
+          ) : (
+            <ul className={styles.list}>
+              {questions.map((q, idx) => {
+                const tags = parseTags(q.tags)
+                return (
+                  <li key={q.id} className={styles.item} style={{ animationDelay: `${idx * 0.04}s` }}>
+                    <div className={styles.itemIndex}>{String(idx + 1).padStart(2, '0')}</div>
+
+                    <div className={styles.itemBody}>
+                      <div className={styles.itemTop}>
+                        {q.is_solved && <span className={styles.solvedDot} title="已解决" />}
+                        <Link to={`/questions/${q.id}`} className={styles.itemTitle}>
+                          {q.title}
+                        </Link>
+                      </div>
+                      <div className={styles.itemMeta}>
+                        <span className={styles.itemAuthor}>{q.author_name}</span>
+                        <span className={styles.metaDot}>·</span>
+                        <span className={styles.itemTime}>{formatRelative(q.created_at)}</span>
+                        {tags.length > 0 && (
+                          <>
+                            <span className={styles.metaDot}>·</span>
+                            <div className={styles.tagRow}>
+                              {tags.slice(0, 3).map(tag => (
+                                <Link key={tag} to={`/topics?tag=${encodeURIComponent(tag)}`} className={styles.tag}>{tag}</Link>
+                              ))}
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className={styles.itemStats}>
+                      <div className={styles.statItem}>
+                        <span className={styles.statNum}>{q.votes}</span>
+                        <span className={styles.statLabel}>赞</span>
+                      </div>
+                      <div className={`${styles.statItem} ${q.answers_count > 0 ? styles.hasAnswers : ''} ${q.is_solved ? styles.isSolved : ''}`}>
+                        <span className={styles.statNum}>{q.answers_count}</span>
+                        <span className={styles.statLabel}>答</span>
+                      </div>
+                    </div>
+                  </li>
+                )
+              })}
+            </ul>
           )}
         </div>
 
-        {loading ? (
-          <div className={styles.loadingWrap}>
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className={styles.skeleton} style={{ animationDelay: `${i * 0.08}s` }} />
-            ))}
-          </div>
-        ) : questions.length === 0 ? (
-          <div className={styles.empty}>
-            <p className={styles.emptyTitle}>还没有问题</p>
-            <p className={styles.emptyHint}>成为第一个提问者</p>
-            {user
-              ? <Link to="/ask" className={styles.emptyBtn}>立即提问</Link>
-              : <Link to="/register" className={styles.emptyBtn}>注册后提问</Link>
-            }
-          </div>
-        ) : (
-          <ul className={styles.list}>
-            {questions.map((q, idx) => {
-              const tags = parseTags(q.tags)
-              return (
-                <li key={q.id} className={styles.item} style={{ animationDelay: `${idx * 0.04}s` }}>
-                  <div className={styles.itemIndex}>{String(idx + 1).padStart(2, '0')}</div>
-
-                  <div className={styles.itemBody}>
-                    <div className={styles.itemTop}>
-                      {q.is_solved && <span className={styles.solvedDot} title="已解决" />}
-                      <Link to={`/questions/${q.id}`} className={styles.itemTitle}>
-                        {q.title}
-                      </Link>
-                    </div>
-                    <div className={styles.itemMeta}>
-                      <span className={styles.itemAuthor}>{q.author_name}</span>
-                      <span className={styles.metaDot}>·</span>
-                      <span className={styles.itemTime}>{formatRelative(q.created_at)}</span>
-                      {tags.length > 0 && (
-                        <>
-                          <span className={styles.metaDot}>·</span>
-                          <div className={styles.tagRow}>
-                            {tags.slice(0, 3).map(tag => (
-                              <Link key={tag} to={`/topics?tag=${encodeURIComponent(tag)}`} className={styles.tag}>{tag}</Link>
-                            ))}
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className={styles.itemStats}>
-                    <div className={styles.statItem}>
-                      <span className={styles.statNum}>{q.votes}</span>
-                      <span className={styles.statLabel}>赞</span>
-                    </div>
-                    <div className={`${styles.statItem} ${q.answers_count > 0 ? styles.hasAnswers : ''} ${q.is_solved ? styles.isSolved : ''}`}>
-                      <span className={styles.statNum}>{q.answers_count}</span>
-                      <span className={styles.statLabel}>答</span>
-                    </div>
-                  </div>
-                </li>
-              )
-            })}
-          </ul>
-        )}
+        {/* right: topics sidebar */}
+        <aside className={styles.sidebar}>
+          <Link to="/topics" className={styles.topicsCard}>
+            <span className={styles.topicsEyebrow}>TOPICS</span>
+            <p className={styles.topicsTitle}>浏览<br />全部话题</p>
+            <div className={styles.topicsTagGrid}>
+              {topTags.slice(0, 8).map((t, i) => (
+                <span
+                  key={t.tag}
+                  className={styles.topicsTag}
+                  style={{ animationDelay: `${i * 0.04}s` }}
+                >
+                  {t.tag}
+                </span>
+              ))}
+            </div>
+            <div className={styles.topicsFooter}>
+              <span className={styles.topicsCount}>{topTags.length > 0 ? `${topTags.length}+ 个话题` : '查看话题'}</span>
+              <span className={styles.topicsArrow}>→</span>
+            </div>
+          </Link>
+        </aside>
       </main>
 
       <footer className={styles.footer}>
