@@ -16,15 +16,6 @@
   z-index: 20;
 }
 
-.topbarInner {
-  max-width: 1080px;
-  margin: 0 auto;
-  padding: 0 48px;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
 
 .brand {
   display: flex;
@@ -61,35 +52,41 @@
   line-height: 1;
 }
 
-/* ── Nav right wrapper ────────────────────────────── */
-.navRight {
+/* ── Topbar three-section layout ─────────────────── */
+/* brand | searchArea (flex:1) | nav (fixed) */
+.topbarInner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 48px;
+  height: 60px;
   display: flex;
   align-items: center;
-  position: relative;
+  gap: 16px;
 }
 
-/* ── Search bar (collapsed by default) ───────────── */
+/* ── Middle search area ───────────────────────────── */
+.searchArea {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+/* ── Search bar (shown when open) ────────────────── */
 .searchBar {
   display: flex;
   align-items: center;
-  gap: 8px;
-  max-width: 0;
-  opacity: 0;
-  overflow: hidden;
-  pointer-events: none;
-  border-bottom: 1.5px solid transparent;
-  transition:
-    max-width 0.32s cubic-bezier(0.4, 0, 0.2, 1),
-    opacity 0.22s ease,
-    border-color 0.22s ease;
-  white-space: nowrap;
+  gap: 10px;
+  width: 100%;
+  border-bottom: 1.5px solid var(--ink);
+  padding-bottom: 2px;
+  animation: searchExpand 0.28s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
-.searchBarOpen {
-  max-width: 360px;
-  opacity: 1;
-  pointer-events: auto;
-  border-bottom-color: var(--ink);
+@keyframes searchExpand {
+  from { opacity: 0; transform: scaleX(0.85); transform-origin: right; }
+  to   { opacity: 1; transform: scaleX(1);    transform-origin: right; }
 }
 
 .searchBarIcon {
@@ -98,6 +95,8 @@
 }
 
 .searchBarInput {
+  flex: 1;
+  min-width: 0;
   font-family: 'DM Sans', sans-serif;
   font-size: 13.5px;
   font-weight: 400;
@@ -105,8 +104,7 @@
   background: transparent;
   border: none;
   outline: none;
-  width: 180px;
-  padding: 4px 0;
+  padding: 6px 0;
   caret-color: var(--accent);
 }
 
@@ -114,17 +112,17 @@
   color: var(--ink-muted);
 }
 
+/* 与 .askBtn 等高等宽 */
 .searchBarBtn {
   font-family: 'DM Sans', sans-serif;
-  font-size: 12.5px;
-  font-weight: 600;
+  font-size: 13.5px;
+  font-weight: 500;
   color: #fff;
   background: var(--accent);
   border: none;
   border-radius: 2px;
-  padding: 5px 12px;
+  padding: 7px 14px;
   cursor: pointer;
-  letter-spacing: 0.02em;
   flex-shrink: 0;
   transition: background 0.15s;
 }
@@ -135,8 +133,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   color: var(--ink-muted);
   background: transparent;
   border: none;
@@ -151,18 +149,12 @@
   background: var(--surface-2);
 }
 
-/* ── Nav (hides when search open) ────────────────── */
+/* ── Nav (always visible) ─────────────────────────── */
 .nav {
   display: flex;
   align-items: center;
   gap: 8px;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-}
-
-.navHidden {
-  opacity: 0;
-  pointer-events: none;
-  transform: translateX(8px);
+  flex-shrink: 0;
 }
 
 .searchNavBtn {
