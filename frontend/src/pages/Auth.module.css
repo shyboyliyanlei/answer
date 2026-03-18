@@ -1,0 +1,283 @@
+/* ── Layout ───────────────────────────────────────── */
+.page {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ── Brand panel ──────────────────────────────────── */
+.brand {
+  position: relative;
+  width: 420px;
+  flex-shrink: 0;
+  background: var(--ink);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 56px 48px;
+  overflow: hidden;
+}
+
+.brand::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 40% at 110% 10%, rgba(217, 79, 43, 0.35) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 60% at -10% 90%, rgba(217, 79, 43, 0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.brandInner {
+  position: relative;
+}
+
+.logo {
+  font-family: 'DM Serif Display', serif;
+  font-size: 64px;
+  line-height: 1;
+  color: var(--accent);
+  display: block;
+  margin-bottom: 32px;
+  letter-spacing: -2px;
+}
+
+.tagline {
+  font-family: 'DM Serif Display', serif;
+  font-size: 28px;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 400;
+}
+
+.tagline em {
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* decorative numbering */
+.brandDeco {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.decoNum {
+  font-family: 'DM Serif Display', serif;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.25);
+}
+
+.decoLine {
+  display: block;
+  width: 1px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.12);
+  margin: 6px 0 6px 4px;
+}
+
+/* ── Form panel ───────────────────────────────────── */
+.form {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 32px;
+  background: var(--surface);
+}
+
+.formInner {
+  width: 100%;
+  max-width: 400px;
+}
+
+/* ── Heading ──────────────────────────────────────── */
+.heading {
+  margin-bottom: 40px;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+
+.title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 42px;
+  font-weight: 400;
+  letter-spacing: -1.5px;
+  line-height: 1.1;
+  color: var(--ink);
+}
+
+/* ── Error ────────────────────────────────────────── */
+.error {
+  background: #fef3f0;
+  border: 1px solid #f9c5b8;
+  border-left: 3px solid var(--accent);
+  color: var(--accent-hover);
+  font-size: 13.5px;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  margin-bottom: 24px;
+}
+
+/* ── Fields ───────────────────────────────────────── */
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fieldLabel {
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: var(--ink-secondary);
+}
+
+.input {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 11px 14px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  width: 100%;
+}
+
+.input::placeholder {
+  color: var(--ink-muted);
+}
+
+.input:hover {
+  border-color: #c8c8c4;
+}
+
+.input:focus {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 3px rgba(17, 17, 16, 0.06);
+}
+
+/* ── Submit ───────────────────────────────────────── */
+.submit {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14.5px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: #fff;
+  background: var(--ink);
+  border: none;
+  border-radius: var(--radius);
+  padding: 13px 24px;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+}
+
+.submit:hover:not(:disabled) {
+  background: #2a2a28;
+}
+
+.submit:active:not(:disabled) {
+  transform: scale(0.985);
+}
+
+.submit:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ── Spinner ──────────────────────────────────────── */
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.65s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Switch link ──────────────────────────────────── */
+.switchText {
+  font-size: 13.5px;
+  color: var(--ink-secondary);
+  margin-top: 28px;
+  text-align: center;
+}
+
+.switchLink {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.15s;
+}
+
+.switchLink:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ── Responsive ───────────────────────────────────── */
+@media (max-width: 768px) {
+  .page {
+    flex-direction: column;
+  }
+
+  .brand {
+    width: 100%;
+    padding: 40px 32px 36px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 20px;
+  }
+
+  .brandInner {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .logo {
+    font-size: 40px;
+    margin-bottom: 0;
+  }
+
+  .tagline {
+    font-size: 18px;
+  }
+
+  .brandDeco {
+    display: none;
+  }
+
+  .title {
+    font-size: 34px;
+  }
+}
