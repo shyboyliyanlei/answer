@@ -10,6 +10,7 @@ export default function Login() {
   const from = (location.state as any)?.from?.pathname || '/'
 
   const [form, setForm] = useState({ email: '', password: '' })
+  const [showPwd, setShowPwd] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -79,16 +80,37 @@ export default function Login() {
 
             <div className={styles.field}>
               <label className={styles.fieldLabel} htmlFor="password">密码</label>
-              <input
-                id="password"
-                type="password"
-                className={styles.input}
-                placeholder="••••••••"
-                value={form.password}
-                onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
-                required
-                autoComplete="current-password"
-              />
+              <div className={styles.pwdWrap}>
+                <input
+                  id="password"
+                  type={showPwd ? 'text' : 'password'}
+                  className={styles.input}
+                  placeholder="••••••••"
+                  value={form.password}
+                  onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
+                  required
+                  autoComplete="current-password"
+                />
+                <button
+                  type="button"
+                  className={styles.eyeBtn}
+                  onClick={() => setShowPwd(v => !v)}
+                  aria-label={showPwd ? '隐藏密码' : '显示密码'}
+                >
+                  {showPwd ? (
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/>
+                      <circle cx="8" cy="8" r="2" stroke="currentColor" strokeWidth="1.4"/>
+                      <path d="M2 2l12 12" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+                    </svg>
+                  ) : (
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/>
+                      <circle cx="8" cy="8" r="2" stroke="currentColor" strokeWidth="1.4"/>
+                    </svg>
+                  )}
+                </button>
+              </div>
             </div>
 
             <button type="submit" className={styles.submit} disabled={loading}>
