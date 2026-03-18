@@ -4,6 +4,45 @@ import { POINTS, addPoints } from '../points';
 
 const router = Router();
 
+// 问题列表（排序 + 标签筛选）
+router.get('/', async (req: Request, res: Response) => {
+  const { sort = 'newest', tag } = req.query;
+
+  const conditions: string[] = [];
+  const params: any[] = [];
+
+  if (sort === 'unsolved') {
+    conditions.push('q.is_solved = FALSE');
+  }
+
+  if (tag) {
+    conditions.push('JSON_CONTAINS(q.tags, JSON_QUOTE(?))');
+    params.push(tag);
+  }
+
+  const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+
+  let orderBy: string;
+  if (sort === 'hot') {
+    orderBy = 'ORDER BY q.votes DESC, q.created_at DESC';
+  } else {
+    // newest / unsolved 都按创建时间倒序
+    orderBy = 'ORDER BY q.created_at DESC';
+  }
+
+  const sql = `
+    SELECT q.id, q.title, q.tags, q.author_id, u.username AS author_name,
+           q.views, q.answers_count, q.votes, q.is_solved, q.created_at
+    FROM questions q
+    JOIN users u ON q.author_id = u.id
+    ${where}
+    ${orderBy}
+  `;
+
+  const [rows]: any = await pool.query(sql, params);
+  res.json(rows);
+});
+
 // 发布问题
 router.post('/', async (req: Request, res: Response) => {
   const { title, content, tags, author_id } = req.body;
