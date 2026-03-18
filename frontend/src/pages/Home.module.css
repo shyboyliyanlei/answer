@@ -569,6 +569,7 @@
 .sidebar {
   position: sticky;
   top: 80px;
+  margin-top: 28px;
   animation: fadeUp 0.5s 0.1s ease both;
 }
 
@@ -582,25 +583,9 @@
   border-radius: 2px;
   padding: 20px 18px 16px;
   text-decoration: none;
-  overflow: hidden;
-  position: relative;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.topicsCard::after {
-  content: '话题';
-  position: absolute;
-  top: -4px;
-  right: 14px;
-  font-family: 'DM Serif Display', serif;
-  font-size: 64px;
-  font-weight: 400;
-  color: var(--border);
-  line-height: 1;
-  letter-spacing: -3px;
-  pointer-events: none;
-  transition: color 0.2s ease;
-}
 
 .topicsCard:hover {
   border-color: var(--ink);
