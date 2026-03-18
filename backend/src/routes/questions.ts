@@ -94,4 +94,26 @@ router.post('/', async (req: Request, res: Response) => {
   }
 });
 
+// 编辑问题
+router.patch('/:id', async (req: Request, res: Response) => {
+  const id = Number(req.params.id);
+  const { title, content, tags, operator_id } = req.body;
+  if (!operator_id) { res.status(400).json({ error: 'operator_id is required' }); return; }
+
+  const [rows]: any = await pool.query('SELECT author_id FROM questions WHERE id = ?', [id]);
+  if (!rows.length) { res.status(404).json({ error: 'Question not found' }); return; }
+  if (rows[0].author_id !== operator_id) { res.status(403).json({ error: 'Forbidden' }); return; }
+
+  const fields: string[] = [];
+  const params: any[] = [];
+  if (title !== undefined) { fields.push('title = ?'); params.push(title); }
+  if (content !== undefined) { fields.push('content = ?'); params.push(content); }
+  if (tags !== undefined) { fields.push('tags = ?'); params.push(JSON.stringify(tags)); }
+  if (!fields.length) { res.status(400).json({ error: 'Nothing to update' }); return; }
+
+  params.push(id);
+  await pool.query(`UPDATE questions SET ${fields.join(', ')} WHERE id = ?`, params);
+  res.json({ success: true });
+});
+
 export default router;

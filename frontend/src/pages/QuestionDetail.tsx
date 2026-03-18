@@ -1,4 +1,4 @@
-import { useState, useEffect, FormEvent } from 'react'
+import { useState, useEffect, FormEvent, KeyboardEvent } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import Topbar from '../components/Topbar'
@@ -110,6 +110,19 @@ export default function QuestionDetail() {
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
 
+  // ── Question edit state ──
+  const [editingQuestion, setEditingQuestion] = useState(false)
+  const [editTitle, setEditTitle] = useState('')
+  const [editContent, setEditContent] = useState('')
+  const [editTags, setEditTags] = useState<string[]>([])
+  const [editTagInput, setEditTagInput] = useState('')
+  const [savingQuestion, setSavingQuestion] = useState(false)
+
+  // ── Answer edit state ──
+  const [editingAnswerId, setEditingAnswerId] = useState<number | null>(null)
+  const [editAnswerContent, setEditAnswerContent] = useState('')
+  const [savingAnswer, setSavingAnswer] = useState(false)
+
   useEffect(() => {
     async function load() {
       setLoading(true)
@@ -167,6 +180,75 @@ export default function QuestionDetail() {
     }
   }
 
+  function startEditQuestion() {
+    if (!question) return
+    const t = Array.isArray(question.tags) ? question.tags
+      : (typeof question.tags === 'string' ? (() => { try { return JSON.parse(question.tags as any) } catch { return [] } })() : [])
+    setEditTitle(question.title)
+    setEditContent(question.content)
+    setEditTags(t)
+    setEditTagInput('')
+    setEditingQuestion(true)
+  }
+
+  function handleEditTagKeyDown(e: KeyboardEvent<HTMLInputElement>) {
+    if (e.nativeEvent.isComposing) return
+    if ((e.key === 'Enter' || e.key === ',') && editTagInput.trim()) {
+      e.preventDefault()
+      const tag = editTagInput.trim().replace(/,$/, '')
+      if (tag && !editTags.includes(tag) && editTags.length < 5) {
+        setEditTags(t => [...t, tag])
+      }
+      setEditTagInput('')
+    }
+    if (e.key === 'Backspace' && !editTagInput && editTags.length > 0) {
+      setEditTags(t => t.slice(0, -1))
+    }
+  }
+
+  async function saveQuestion() {
+    if (!question || !user) return
+    setSavingQuestion(true)
+    try {
+      const res = await fetch(`/api/questions/${question.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: editTitle, content: editContent, tags: editTags, operator_id: user.id }),
+      })
+      if (!res.ok) throw new Error('保存失败')
+      setQuestion(q => q ? { ...q, title: editTitle, content: editContent, tags: editTags } : q)
+      setEditingQuestion(false)
+    } catch {
+      // silently ignore
+    } finally {
+      setSavingQuestion(false)
+    }
+  }
+
+  function startEditAnswer(answer: Answer) {
+    setEditingAnswerId(answer.id)
+    setEditAnswerContent(answer.content)
+  }
+
+  async function saveAnswer() {
+    if (!user || editingAnswerId === null) return
+    setSavingAnswer(true)
+    try {
+      const res = await fetch(`/api/answers/${editingAnswerId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: editAnswerContent, operator_id: user.id }),
+      })
+      if (!res.ok) throw new Error('保存失败')
+      setAnswers(a => a.map(x => x.id === editingAnswerId ? { ...x, content: editAnswerContent } : x))
+      setEditingAnswerId(null)
+    } catch {
+      // silently ignore
+    } finally {
+      setSavingAnswer(false)
+    }
+  }
+
   async function acceptAnswer(answerId: number) {
     if (!user) return
     const res = await fetch(`/api/answers/${answerId}/accept`, {
@@ -216,28 +298,76 @@ export default function QuestionDetail() {
             <div className={styles.voteCol}>
               <VoteButton count={question.votes} targetType="question" targetId={question.id} />
             </div>
-            <div className={styles.questionBody}>
-              <div className={styles.questionMeta}>
-                {tags.map(tag => (
-                  <Link key={tag} to={`/topics?tag=${encodeURIComponent(tag)}`} className={styles.tag}>{tag}</Link>
-                ))}
-                {question.is_solved && <span className={styles.solvedBadge}>已解决</span>}
-              </div>
-              <h1 className={styles.questionTitle}>{question.title}</h1>
-              <div className={styles.authorLine}>
-                <span className={styles.authorName}>{question.author_name}</span>
-                <span className={styles.dot}>·</span>
-                <span className={styles.date}>{formatDate(question.created_at)}</span>
-                <span className={styles.dot}>·</span>
-                <span className={styles.stat}>{question.views} 次浏览</span>
-                <span className={styles.dot}>·</span>
-                <span className={styles.stat}>{question.answers_count} 个回答</span>
-              </div>
-              <div className={styles.content}>
-                {question.content.split('\n').map((line, i) => (
-                  <p key={i}>{line || <br />}</p>
-                ))}
-              </div>
+            <div className={`${styles.questionBody} ${editingQuestion ? styles.editingBlock : ''}`}>
+              {editingQuestion ? (
+                <>
+                  <div className={styles.editLabel}>编辑问题</div>
+                  <input
+                    className={styles.editTitleInput}
+                    value={editTitle}
+                    onChange={e => setEditTitle(e.target.value)}
+                    placeholder="问题标题"
+                    maxLength={150}
+                  />
+                  <div className={styles.editTagsField}>
+                    {editTags.map(tag => (
+                      <span key={tag} className={styles.editTag}>
+                        {tag}
+                        <button type="button" className={styles.editTagRemove} onClick={() => setEditTags(t => t.filter(x => x !== tag))}>×</button>
+                      </span>
+                    ))}
+                    {editTags.length < 5 && (
+                      <input
+                        className={styles.editTagInput}
+                        placeholder="添加标签，Enter 确认"
+                        value={editTagInput}
+                        onChange={e => setEditTagInput(e.target.value)}
+                        onKeyDown={handleEditTagKeyDown}
+                      />
+                    )}
+                  </div>
+                  <textarea
+                    className={styles.editContentTextarea}
+                    value={editContent}
+                    onChange={e => setEditContent(e.target.value)}
+                    rows={10}
+                    placeholder="问题描述"
+                  />
+                  <div className={styles.editActions}>
+                    <button className={styles.editSaveBtn} onClick={saveQuestion} disabled={savingQuestion}>
+                      {savingQuestion ? '保存中…' : '保存修改'}
+                    </button>
+                    <button className={styles.editCancelBtn} onClick={() => setEditingQuestion(false)}>取消</button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className={styles.questionMeta}>
+                    {tags.map(tag => (
+                      <Link key={tag} to={`/topics?tag=${encodeURIComponent(tag)}`} className={styles.tag}>{tag}</Link>
+                    ))}
+                    {question.is_solved && <span className={styles.solvedBadge}>已解决</span>}
+                  </div>
+                  <h1 className={styles.questionTitle}>{question.title}</h1>
+                  <div className={styles.authorLine}>
+                    <span className={styles.authorName}>{question.author_name}</span>
+                    <span className={styles.dot}>·</span>
+                    <span className={styles.date}>{formatDate(question.created_at)}</span>
+                    <span className={styles.dot}>·</span>
+                    <span className={styles.stat}>{question.views} 次浏览</span>
+                    <span className={styles.dot}>·</span>
+                    <span className={styles.stat}>{question.answers_count} 个回答</span>
+                    {isAuthor && (
+                      <button className={styles.editBtn} onClick={startEditQuestion}>编辑</button>
+                    )}
+                  </div>
+                  <div className={styles.content}>
+                    {question.content.split('\n').map((line, i) => (
+                      <p key={i}>{line || <br />}</p>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
           </section>
 
@@ -264,28 +394,53 @@ export default function QuestionDetail() {
                         </div>
                       )}
                     </div>
-                    <div className={styles.answerBody}>
-                      {answer.is_accepted && (
-                        <div className={styles.acceptedLabel}>最佳答案</div>
+                    <div className={`${styles.answerBody} ${editingAnswerId === answer.id ? styles.editingBlock : ''}`}>
+                      {editingAnswerId === answer.id ? (
+                        <>
+                          <div className={styles.editLabel}>编辑回答</div>
+                          <textarea
+                            className={styles.editContentTextarea}
+                            value={editAnswerContent}
+                            onChange={e => setEditAnswerContent(e.target.value)}
+                            rows={8}
+                            placeholder="回答内容"
+                            autoFocus
+                          />
+                          <div className={styles.editActions}>
+                            <button className={styles.editSaveBtn} onClick={saveAnswer} disabled={savingAnswer}>
+                              {savingAnswer ? '保存中…' : '保存修改'}
+                            </button>
+                            <button className={styles.editCancelBtn} onClick={() => setEditingAnswerId(null)}>取消</button>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          {answer.is_accepted && (
+                            <div className={styles.acceptedLabel}>最佳答案</div>
+                          )}
+                          <div className={styles.content}>
+                            {answer.content.split('\n').map((line, i) => (
+                              <p key={i}>{line || <br />}</p>
+                            ))}
+                          </div>
+                          <div className={styles.answerFooter}>
+                            <span className={styles.authorName}>{answer.author_name}</span>
+                            <span className={styles.dot}>·</span>
+                            <span className={styles.date}>{formatDate(answer.created_at)}</span>
+                            {user?.id === answer.author_id && (
+                              <button className={styles.editBtn} onClick={() => startEditAnswer(answer)}>编辑</button>
+                            )}
+                            {isAuthor && !answer.is_accepted && !question.is_solved && (
+                              <button
+                                className={styles.acceptBtn}
+                                onClick={() => acceptAnswer(answer.id)}
+                              >
+                                采纳此答案
+                              </button>
+                            )}
+                          </div>
+                        </>
                       )}
-                      <div className={styles.content}>
-                        {answer.content.split('\n').map((line, i) => (
-                          <p key={i}>{line || <br />}</p>
-                        ))}
-                      </div>
-                      <div className={styles.answerFooter}>
-                        <span className={styles.authorName}>{answer.author_name}</span>
-                        <span className={styles.dot}>·</span>
-                        <span className={styles.date}>{formatDate(answer.created_at)}</span>
-                        {isAuthor && !answer.is_accepted && !question.is_solved && (
-                          <button
-                            className={styles.acceptBtn}
-                            onClick={() => acceptAnswer(answer.id)}
-                          >
-                            采纳此答案
-                          </button>
-                        )}
-                      </div>
                     </div>
                   </article>
                 ))}

@@ -73,6 +73,20 @@ router.post('/', async (req: Request, res: Response) => {
   }
 });
 
+// 编辑答案
+router.patch('/:id', async (req: Request, res: Response) => {
+  const id = Number(req.params.id);
+  const { content, operator_id } = req.body;
+  if (!content || !operator_id) { res.status(400).json({ error: 'content and operator_id are required' }); return; }
+
+  const [rows]: any = await pool.query('SELECT author_id FROM answers WHERE id = ?', [id]);
+  if (!rows.length) { res.status(404).json({ error: 'Answer not found' }); return; }
+  if (rows[0].author_id !== operator_id) { res.status(403).json({ error: 'Forbidden' }); return; }
+
+  await pool.query('UPDATE answers SET content = ? WHERE id = ?', [content, id]);
+  res.json({ success: true });
+});
+
 // 采纳答案
 router.patch('/:id/accept', async (req: Request, res: Response) => {
   const answerId = Number(req.params.id);
