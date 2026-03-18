@@ -189,7 +189,7 @@ export default function Home() {
                           <span className={styles.metaDot}>·</span>
                           <div className={styles.tagRow}>
                             {tags.slice(0, 3).map(tag => (
-                              <span key={tag} className={styles.tag}>{tag}</span>
+                              <Link key={tag} to={`/topics?tag=${encodeURIComponent(tag)}`} className={styles.tag}>{tag}</Link>
                             ))}
                           </div>
                         </>

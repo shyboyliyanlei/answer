@@ -6,6 +6,7 @@ import questionsRouter from './routes/questions';
 import answersRouter from './routes/answers';
 import votesRouter from './routes/votes';
 import usersRouter from './routes/users';
+import tagsRouter from './routes/tags';
 
 dotenv.config();
 
@@ -23,5 +24,6 @@ app.use('/api/questions', questionsRouter);
 app.use('/api/answers', answersRouter);
 app.use('/api/votes', votesRouter);
 app.use('/api/users', usersRouter);
+app.use('/api/tags', tagsRouter);
 
 export default app;

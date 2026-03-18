@@ -181,6 +181,14 @@
   border-radius: 2px;
   padding: 3px 9px;
   letter-spacing: 0.02em;
+  text-decoration: none;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+
+.tag:hover {
+  background: var(--ink);
+  color: #fff;
+  border-color: var(--ink);
 }
 
 .solvedBadge {
@@ -473,6 +481,14 @@
   border: 1px solid var(--border);
   border-radius: 2px;
   padding: 3px 9px;
+  text-decoration: none;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+
+.sideTag:hover {
+  background: var(--ink);
+  color: #fff;
+  border-color: var(--ink);
 }
 
 /* ── Loading / Error ──────────────────────────────── */

@@ -235,7 +235,7 @@ export default function QuestionDetail() {
             <div className={styles.questionBody}>
               <div className={styles.questionMeta}>
                 {tags.map(tag => (
-                  <span key={tag} className={styles.tag}>{tag}</span>
+                  <Link key={tag} to={`/topics?tag=${encodeURIComponent(tag)}`} className={styles.tag}>{tag}</Link>
                 ))}
                 {question.is_solved && <span className={styles.solvedBadge}>已解决</span>}
               </div>
@@ -373,7 +373,7 @@ export default function QuestionDetail() {
               <h3 className={styles.sideTitle}>标签</h3>
               <div className={styles.tagList}>
                 {tags.map(tag => (
-                  <span key={tag} className={styles.sideTag}>{tag}</span>
+                  <Link key={tag} to={`/topics?tag=${encodeURIComponent(tag)}`} className={styles.sideTag}>{tag}</Link>
                 ))}
               </div>
             </div>
