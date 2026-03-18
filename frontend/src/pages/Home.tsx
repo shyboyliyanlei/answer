@@ -68,7 +68,7 @@ export default function Home() {
           <nav className={styles.nav}>
             {user ? (
               <>
-                <span className={styles.navUser}>{user.username}</span>
+                <Link to={`/users/${user.id}`} className={styles.navUser}>{user.username}</Link>
                 <Link to="/ask" className={styles.askBtn}>
                   <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
                     <path d="M6.5 1v11M1 6.5h11" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>

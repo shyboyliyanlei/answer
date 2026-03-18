@@ -6,6 +6,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import AskQuestion from './pages/AskQuestion'
 import QuestionDetail from './pages/QuestionDetail'
+import Profile from './pages/Profile'
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
             }
           />
           <Route path="/questions/:id" element={<QuestionDetail />} />
+          <Route path="/users/:id" element={<Profile />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>

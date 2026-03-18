@@ -5,6 +5,7 @@ import authRouter from './routes/auth';
 import questionsRouter from './routes/questions';
 import answersRouter from './routes/answers';
 import votesRouter from './routes/votes';
+import usersRouter from './routes/users';
 
 dotenv.config();
 
@@ -21,5 +22,6 @@ app.use('/api/auth', authRouter);
 app.use('/api/questions', questionsRouter);
 app.use('/api/answers', answersRouter);
 app.use('/api/votes', votesRouter);
+app.use('/api/users', usersRouter);
 
 export default app;
