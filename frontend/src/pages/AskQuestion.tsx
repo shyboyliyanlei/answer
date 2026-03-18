@@ -15,6 +15,7 @@ export default function AskQuestion() {
   const [loading, setLoading] = useState(false)
 
   function handleTagKeyDown(e: KeyboardEvent<HTMLInputElement>) {
+    if (e.nativeEvent.isComposing) return
     if ((e.key === 'Enter' || e.key === ',') && tagInput.trim()) {
       e.preventDefault()
       const tag = tagInput.trim().replace(/,$/, '')
