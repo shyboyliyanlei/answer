@@ -31,16 +31,18 @@ export default function Home() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
 
+  const [sort, setSort] = useState<'recommend' | 'newest' | 'hot'>('recommend')
   const [questions, setQuestions] = useState<Question[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch('/api/questions?sort=newest')
+    setLoading(true)
+    fetch(`/api/questions?sort=${sort}`)
       .then(r => r.json())
       .then(data => setQuestions(Array.isArray(data) ? data : []))
       .catch(() => setQuestions([]))
       .finally(() => setLoading(false))
-  }, [])
+  }, [sort])
 
   function handleLogout() {
     logout()
@@ -127,7 +129,20 @@ export default function Home() {
       {/* ── Question list ── */}
       <main className={styles.main}>
         <div className={styles.listHeader}>
-          <span className={styles.listTitle}>按发布时间排序</span>
+          <div className={styles.sortTabs}>
+            <button
+              className={`${styles.sortBtn} ${sort === 'recommend' ? styles.sortBtnActive : ''}`}
+              onClick={() => setSort('recommend')}
+            >推荐</button>
+            <button
+              className={`${styles.sortBtn} ${sort === 'newest' ? styles.sortBtnActive : ''}`}
+              onClick={() => setSort('newest')}
+            >最新</button>
+            <button
+              className={`${styles.sortBtn} ${sort === 'hot' ? styles.sortBtnActive : ''}`}
+              onClick={() => setSort('hot')}
+            >热度</button>
+          </div>
           {user && (
             <Link to="/ask" className={styles.listAskBtn}>
               发布问题

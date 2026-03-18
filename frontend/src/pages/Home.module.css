@@ -280,6 +280,36 @@
   padding-bottom: 12px;
 }
 
+.sortTabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sortBtn {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 5px 12px;
+  border-radius: 2px;
+  transition: color 0.15s, background 0.15s;
+}
+
+.sortBtn:hover {
+  color: var(--ink);
+  background: var(--surface-2);
+}
+
+.sortBtnActive {
+  color: var(--ink);
+  background: var(--surface-2);
+  font-weight: 600;
+}
+
 .listTitle {
   font-size: 11.5px;
   font-weight: 600;

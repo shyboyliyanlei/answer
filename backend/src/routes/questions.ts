@@ -24,6 +24,8 @@ router.get('/', async (req: Request, res: Response) => {
 
   let orderBy: string;
   if (sort === 'hot') {
+    orderBy = 'ORDER BY q.answers_count DESC, q.created_at DESC';
+  } else if (sort === 'recommend') {
     orderBy = 'ORDER BY q.votes DESC, q.created_at DESC';
   } else {
     // newest / unsolved 都按创建时间倒序
