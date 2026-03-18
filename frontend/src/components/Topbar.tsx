@@ -71,22 +71,27 @@ export default function Topbar() {
                 autoComplete="off"
               />
               <button type="submit" className={styles.searchBarBtn}>搜索</button>
-              <button type="button" className={styles.searchBarClose} onClick={closeSearch} aria-label="关闭搜索">
-                <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
-                  <path d="M1 1l9 9M10 1L1 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                </svg>
-              </button>
             </form>
           )}
         </div>
 
         <nav className={styles.nav}>
-          {/* 搜索图标：个人中心左侧 */}
-          <button className={styles.searchNavBtn} onClick={openSearch} aria-label="搜索">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" strokeWidth="1.5"/>
-              <path d="M10 10l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-            </svg>
+          {/* 搜索/关闭切换按钮 */}
+          <button
+            className={styles.searchNavBtn}
+            onClick={searchOpen ? closeSearch : openSearch}
+            aria-label={searchOpen ? '关闭搜索' : '搜索'}
+          >
+            {searchOpen ? (
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
+              </svg>
+            ) : (
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" strokeWidth="1.5"/>
+                <path d="M10 10l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+            )}
           </button>
           {user ? (
             <>
