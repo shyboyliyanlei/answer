@@ -1,4 +1,4 @@
-import { useState, KeyboardEvent, FormEvent } from 'react'
+import { useState, type KeyboardEvent, type FormEvent } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import Topbar from '../components/Topbar'

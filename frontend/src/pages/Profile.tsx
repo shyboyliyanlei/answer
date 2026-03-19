@@ -52,7 +52,7 @@ function parseTags(tags: any): string[] {
 
 export default function Profile() {
   const { id } = useParams<{ id: string }>()
-  const { user } = useAuth()
+  useAuth()
 
   const [tab, setTab] = useState<'questions' | 'answers'>('questions')
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null)
