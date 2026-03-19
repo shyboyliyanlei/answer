@@ -3,10 +3,79 @@ import { pool } from './db';
 
 const PORT = process.env.PORT || 3000;
 
+async function initDb() {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS users (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      username VARCHAR(50) NOT NULL UNIQUE,
+      email VARCHAR(100) NOT NULL UNIQUE,
+      password VARCHAR(255) NOT NULL,
+      avatar VARCHAR(500) DEFAULT NULL,
+      points INT NOT NULL DEFAULT 0,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS questions (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      title VARCHAR(255) NOT NULL,
+      content TEXT NOT NULL,
+      tags JSON DEFAULT NULL,
+      author_id INT NOT NULL,
+      views INT NOT NULL DEFAULT 0,
+      answers_count INT NOT NULL DEFAULT 0,
+      votes INT NOT NULL DEFAULT 0,
+      is_solved BOOLEAN NOT NULL DEFAULT FALSE,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      FOREIGN KEY (author_id) REFERENCES users(id)
+    )
+  `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS answers (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      content TEXT NOT NULL,
+      question_id INT NOT NULL,
+      author_id INT NOT NULL,
+      votes INT NOT NULL DEFAULT 0,
+      is_accepted BOOLEAN NOT NULL DEFAULT FALSE,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE CASCADE,
+      FOREIGN KEY (author_id) REFERENCES users(id)
+    )
+  `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS votes (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      user_id INT NOT NULL,
+      target_type ENUM('question', 'answer') NOT NULL,
+      target_id INT NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE KEY unique_vote (user_id, target_type, target_id),
+      FOREIGN KEY (user_id) REFERENCES users(id)
+    )
+  `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS notifications (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      user_id INT NOT NULL,
+      type ENUM('answer', 'question_vote', 'answer_vote', 'answer_accept') NOT NULL,
+      message VARCHAR(255) NOT NULL,
+      related_question_id INT DEFAULT NULL,
+      is_read BOOLEAN NOT NULL DEFAULT FALSE,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    )
+  `);
+  console.log('Database tables initialized');
+}
+
 async function start() {
   try {
     await pool.query('SELECT 1');
     console.log('Database connected');
+    await initDb();
   } catch (err) {
     console.error('Database connection failed:', err);
     process.exit(1);
